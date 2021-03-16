@@ -1,0 +1,63 @@
+version: "3.8"
+services:
+  eureka:
+    image: ss-utopia/eureka-server:1.0
+    ports:
+      - 8761:8761
+  config:
+    image: ss-utopia/config-server:1.0
+    ports:
+      - 8888:8888
+    depends_on:
+      - eureka
+    environment:
+      - eureka.client.serviceUrl.defaultZone=http://netflix:eureka@eureka:8761/eureka/
+  auth:
+    image: ss-utopia/auth-service
+    ports:
+      - 8089:8089
+    depends_on:
+      - eureka
+      - config
+    environment:
+      - eureka.client.serviceUrl.defaultZone=http://netflix:eureka@eureka:8761/eureka/
+  customers:
+    image: ss-utopia/customers-service
+    ports:
+      - 8081:8081
+    environment:
+      - eureka.client.serviceUrl.defaultZone=http://netflix:eureka@eureka:8761/eureka/
+    depends_on:
+      - eureka
+      - config
+  flights:
+    image: ss-utopia/flights-service
+    ports:
+      - 8083:8083
+    environment:
+      - eureka.client.serviceUrl.defaultZone=http://netflix:eureka@eureka:8761/eureka/
+    depends_on:
+      - eureka
+      - config
+  tickets:
+    image: ss-utopia/tickets-service
+    ports:
+      - 8082:8082
+    environment:
+      - eureka.client.serviceUrl.defaultZone=http://netflix:eureka@eureka:8761/eureka/
+    depends_on:
+      - eureka
+      - config
+  orchestrator:
+    image: ss-utopia/orchestrator-service
+    ports:
+      - 8080:8080
+    environment:
+      - eureka.client.serviceUrl.defaultZone=http://netflix:eureka@eureka:8761/eureka/
+    depends_on:
+      - eureka
+      - config
+      - auth
+      - customers
+      - flights
+      - tickets
