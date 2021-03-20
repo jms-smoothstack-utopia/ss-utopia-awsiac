@@ -1,63 +1,81 @@
 version: "3.8"
 services:
   eureka:
-    image: ss-utopia/eureka-server:1.0
+    image: 247293358719.dkr.ecr.us-east-1.amazonaws.com/ss-utopia/eureka-server:latest
     ports:
       - 8761:8761
   config:
-    image: ss-utopia/config-server:1.0
+    image: 247293358719.dkr.ecr.us-east-1.amazonaws.com/ss-utopia/config-server:latest
     ports:
       - 8888:8888
     depends_on:
       - eureka
-    environment:
-      - eureka.client.serviceUrl.defaultZone=http://netflix:eureka@eureka:8761/eureka/
+    env_file:
+      - ./.secret/spring_config_encrypt_key.env
+      - ./eureka.env
   auth:
-    image: ss-utopia/auth-service
+    image: 247293358719.dkr.ecr.us-east-1.amazonaws.com/ss-utopia/auth-service:latest
     ports:
       - 8089:8089
     depends_on:
       - eureka
       - config
-    environment:
-      - eureka.client.serviceUrl.defaultZone=http://netflix:eureka@eureka:8761/eureka/
+    env_file:
+      - ./eureka.env
   customers:
-    image: ss-utopia/customers-service
+    image: 247293358719.dkr.ecr.us-east-1.amazonaws.com/ss-utopia/customers-service:latest
     ports:
       - 8081:8081
-    environment:
-      - eureka.client.serviceUrl.defaultZone=http://netflix:eureka@eureka:8761/eureka/
-    depends_on:
-      - eureka
-      - config
-  flights:
-    image: ss-utopia/flights-service
-    ports:
-      - 8083:8083
-    environment:
-      - eureka.client.serviceUrl.defaultZone=http://netflix:eureka@eureka:8761/eureka/
-    depends_on:
-      - eureka
-      - config
-  tickets:
-    image: ss-utopia/tickets-service
-    ports:
-      - 8082:8082
-    environment:
-      - eureka.client.serviceUrl.defaultZone=http://netflix:eureka@eureka:8761/eureka/
-    depends_on:
-      - eureka
-      - config
-  orchestrator:
-    image: ss-utopia/orchestrator-service
-    ports:
-      - 8080:8080
-    environment:
-      - eureka.client.serviceUrl.defaultZone=http://netflix:eureka@eureka:8761/eureka/
+    env_file:
+      - ./eureka.env
     depends_on:
       - eureka
       - config
       - auth
+  flights:
+    image: 247293358719.dkr.ecr.us-east-1.amazonaws.com/ss-utopia/flights-service:latest
+    ports:
+      - 8083:8083
+    env_file:
+      - ./eureka.env
+    depends_on:
+      - eureka
+      - config
+  tickets:
+    image: 247293358719.dkr.ecr.us-east-1.amazonaws.com/ss-utopia/tickets-service:latest
+    ports:
+      - 8082:8082
+    env_file:
+      - ./eureka.env
+    depends_on:
+      - eureka
+      - config
+  orchestrator:
+    image: 247293358719.dkr.ecr.us-east-1.amazonaws.com/ss-utopia/orchestrator-service:latest
+    ports:
+      - 443:443
+    env_file:
+      - ./eureka.env
+    depends_on:
+      - auth
       - customers
       - flights
       - tickets
+x-aws-cloudformation:
+  Resources:
+    OrchestratorTCP443Listener:
+      Properties:
+        Certificates:
+          - CertificateArn: "arn:aws:acm:us-east-1:247293358719:certificate/e82de04a-b93c-4ebf-a9e2-420805d1633d"
+        Protocol: TLS
+    Route53RS:
+      Type: AWS::Route53::RecordSet
+      Properties:
+        Name: services.utopia-air.click
+        Type: A
+        AliasTarget:
+          DNSName:
+            Fn::GetAtt: LoadBalancer.DNSName
+          HostedZoneId:
+           Fn::GetAtt: LoadBalancer.CanonicalHostedZoneID
+        HostedZoneId: Z07227751H35Z7E3SB7PD
