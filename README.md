@@ -26,10 +26,10 @@ docker compose --project-name ss-utopia --context ss-utopia up -d
 This will parse and convert the template to a CloudFormation template and deploy it as a stack on AWS, taking __~80 lines of code__ and turning it into __>1,200 line CloudFormation template__. Using this tool significantly reduces the chance for error, automates a significant amount of boilerplate, and allows for a very simple deployment while still providing the benefits of a CloudFormation Stack.
 
 From this:
-![Docker Compose File](./media/compose-file.png)
+![Docker Compose File](https://utopia-documentation-media.s3.amazonaws.com/compose-file.png)
 
 To this:
-![CloudFormation Template](./media/cfn-template.gif)
+![CloudFormation Template](https://utopia-documentation-media.s3.amazonaws.com/cfn-template.gif)
 
 ## CloudFormation Template
 The created template can be examined before deployment by running the following command:
@@ -52,7 +52,7 @@ docker compose convert | Out-File stack.yaml
 
 ### Diagram
 Viewing the created template as a diagram inside AWS CloudFormation gives a clearer view of the complexity of this deployment:
-![CFN Template Diagram](./media/template-diagram.png)
+![CFN Template Diagram](https://utopia-documentation-media.s3.amazonaws.com/template-diagram.png)
 
 ## Additional Resources
 The Compose Specification for ECS allows additional resources to be created (or existing resources used) by including "overlays" to the compose file. In this architecture, we are including two overlays:
