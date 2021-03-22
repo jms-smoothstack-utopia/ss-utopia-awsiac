@@ -1,11 +1,11 @@
 version: "3.8"
 services:
   eureka:
-    image: 247293358719.dkr.ecr.us-east-1.amazonaws.com/ss-utopia/eureka-server:latest
+    image: 247293358719.dkr.ecr.us-east-1.amazonaws.com/main/ss-utopia/eureka-server:latest
     ports:
       - 8761:8761
   config:
-    image: 247293358719.dkr.ecr.us-east-1.amazonaws.com/ss-utopia/config-server:latest
+    image: 247293358719.dkr.ecr.us-east-1.amazonaws.com/main/ss-utopia/config-server:latest
     ports:
       - 8888:8888
     depends_on:
@@ -14,7 +14,7 @@ services:
       - ./.secret/spring_config_encrypt_key.env
       - ./eureka.env
   auth:
-    image: 247293358719.dkr.ecr.us-east-1.amazonaws.com/ss-utopia/auth-service:latest
+    image: 247293358719.dkr.ecr.us-east-1.amazonaws.com/main/ss-utopia/auth-service:latest
     ports:
       - 8089:8089
     depends_on:
@@ -23,7 +23,7 @@ services:
     env_file:
       - ./eureka.env
   customers:
-    image: 247293358719.dkr.ecr.us-east-1.amazonaws.com/ss-utopia/customers-service:latest
+    image: 247293358719.dkr.ecr.us-east-1.amazonaws.com/main/ss-utopia/customers-service:latest
     ports:
       - 8081:8081
     env_file:
@@ -33,7 +33,7 @@ services:
       - config
       - auth
   flights:
-    image: 247293358719.dkr.ecr.us-east-1.amazonaws.com/ss-utopia/flights-service:latest
+    image: 247293358719.dkr.ecr.us-east-1.amazonaws.com/main/ss-utopia/flights-service:latest
     ports:
       - 8083:8083
     env_file:
@@ -42,7 +42,7 @@ services:
       - eureka
       - config
   tickets:
-    image: 247293358719.dkr.ecr.us-east-1.amazonaws.com/ss-utopia/tickets-service:latest
+    image: 247293358719.dkr.ecr.us-east-1.amazonaws.com/main/ss-utopia/tickets-service:latest
     ports:
       - 8082:8082
     env_file:
@@ -51,7 +51,7 @@ services:
       - eureka
       - config
   orchestrator:
-    image: 247293358719.dkr.ecr.us-east-1.amazonaws.com/ss-utopia/orchestrator-service:latest
+    image: 247293358719.dkr.ecr.us-east-1.amazonaws.com/main/ss-utopia/orchestrator-service:latest
     ports:
       - 443:443
     env_file:
