@@ -66,7 +66,7 @@ x-aws-cloudformation:
     OrchestratorTCP443Listener:
       Properties:
         Certificates:
-          - CertificateArn: "arn:aws:acm:us-east-1:247293358719:certificate/e82de04a-b93c-4ebf-a9e2-420805d1633d"
+          - CertificateArn: "arn:aws:acm:us-east-1:247293358719:certificate/c6d90f51-d983-4f97-b5a6-1916de46f169"
         Protocol: TLS
     Route53RS:
       Type: AWS::Route53::RecordSet
