@@ -1,69 +1,59 @@
 version: "3.8"
 services:
-  eureka:
-    image: 247293358719.dkr.ecr.us-east-1.amazonaws.com/dev/ss-utopia/eureka-server:latest
-    ports:
-      - 8761:8761
-  config:
+  utopia-config-service:
     image: 247293358719.dkr.ecr.us-east-1.amazonaws.com/dev/ss-utopia/config-server:latest
     ports:
       - 8888:8888
-    depends_on:
-      - eureka
     env_file:
       - ./.secret/spring_config_encrypt_key.env
-      - ./eureka.env
-  auth:
+      - ./profile.env
+  utopia-auth-service:
     image: 247293358719.dkr.ecr.us-east-1.amazonaws.com/dev/ss-utopia/auth-service:latest
     ports:
       - 8089:8089
     depends_on:
-      - eureka
-      - config
+      - utopia-config-service
     env_file:
-      - ./eureka.env
-  customers:
+      - ./profile.env
+  utopia-customers-service:
     image: 247293358719.dkr.ecr.us-east-1.amazonaws.com/dev/ss-utopia/customers-service:latest
     ports:
       - 8081:8081
     env_file:
-      - ./eureka.env
+      - ./profile.env
     depends_on:
-      - eureka
-      - config
-      - auth
-  flights:
+      - utopia-config-service
+      - utopia-auth-service
+  utopia-flights-service:
     image: 247293358719.dkr.ecr.us-east-1.amazonaws.com/dev/ss-utopia/flights-service:latest
     ports:
       - 8083:8083
     env_file:
-      - ./eureka.env
+      - ./profile.env
     depends_on:
-      - eureka
-      - config
-  tickets:
+      - utopia-config-service
+  utopia-tickets-service:
     image: 247293358719.dkr.ecr.us-east-1.amazonaws.com/dev/ss-utopia/tickets-service:latest
     ports:
       - 8082:8082
     env_file:
-      - ./eureka.env
+      - ./profile.env
     depends_on:
-      - eureka
-      - config
-  orchestrator:
+      - utopia-config-service
+  utopia-orchestrator-service:
     image: 247293358719.dkr.ecr.us-east-1.amazonaws.com/dev/ss-utopia/orchestrator-service:latest
     ports:
       - 443:443
     env_file:
-      - ./eureka.env
+      - ./profile.env
     depends_on:
-      - auth
-      - customers
-      - flights
-      - tickets
+      - utopia-auth-service
+      - utopia-customers-service
+      - utopia-flights-service
+      - utopia-tickets-service
 x-aws-cloudformation:
   Resources:
-    OrchestratorTCP443Listener:
+    UtopiaorchestratorserviceTCP443Listener:
       Properties:
         Certificates:
           - CertificateArn: "arn:aws:acm:us-east-1:247293358719:certificate/c6d90f51-d983-4f97-b5a6-1916de46f169"
